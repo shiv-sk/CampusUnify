@@ -44,10 +44,7 @@ const createSendToken = (user, statusCode, res) => {
     SameSite: 'none',
   };
 
-   if (process.env.NODE_ENV === 'production') {
-    cookieOptions.secure = true;
-    cookieOptions.SameSite = 'None';
-  }
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
   const { password, ...rest } = user._doc;
 
   res.cookie('jwt', token, cookieOptions).status(statusCode).json({
