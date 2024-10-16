@@ -41,10 +41,12 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN + 86400000,
     ),
     httpOnly: true,
-    SameSite: 'none',
   };
 
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+    cookieOptions.SameSite = 'None';
+  }
   const { password, ...rest } = user._doc;
 
   res.cookie('jwt', token, cookieOptions).status(statusCode).json({
