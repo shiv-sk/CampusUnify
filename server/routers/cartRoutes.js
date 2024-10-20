@@ -1,11 +1,11 @@
 const express = require('express');
-const authController = require('./../controllers/authController');
+const authMiddleware = require('./../middleware/authMiddleware');
 const cartController = require('./../controllers/cartController');
 
 const router = express.Router();
 
-router.use(authController.protect);
-router.use(authController.restrictTo('user'));
+router.use(authMiddleware.protect);
+router.use(authMiddleware.restrictTo('user'));
 router
   .route('/:eventId')
   .post(cartController.addToCart)

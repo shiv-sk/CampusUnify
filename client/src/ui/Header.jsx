@@ -1,10 +1,10 @@
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useUser } from '../features/authentication/useUser';
 import useTheme from '../hooks/useTheme';
+import { useAuth } from '../context/authContext';
 
 export default function Header() {
-  const { user } = useUser();
+  const {user} = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const renderUserLinks = () => {

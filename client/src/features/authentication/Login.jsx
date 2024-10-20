@@ -4,10 +4,11 @@ import PageLayout from '../../styles/PageLayout';
 import Logo from '../../ui/Logo';
 import PasswordInput from '../../ui/PasswordInput';
 import { useLogin } from './useLogin';
-import { useUser } from './useUser';
+import { useAuth } from '../../context/authContext';
+
 
 export default function Login() {
-  const { user } = useUser();
+  const {user} = useAuth();
   const navigate = useNavigate();
 
   if (user) navigate('/events');

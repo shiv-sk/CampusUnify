@@ -1,6 +1,6 @@
 const express = require('express');
 const paymentController = require('./../controllers/paymentController');
-const authController = require('./../controllers/authController');
+const authMiddleware = require('./../middleware/authMiddleware');
 const cartController = require('./../controllers/cartController');
 const bookingsController = require('./../controllers/bookingsController');
 
@@ -15,7 +15,7 @@ router.post(
   cartController.clearCart,
 );
 
-router.use(authController.protect);
+router.use(authMiddleware.protect);
 router.get('/createOrder', paymentController.createOrder);
 
 module.exports = router;

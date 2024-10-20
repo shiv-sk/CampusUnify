@@ -17,36 +17,28 @@ const mailGenerator = new Mailgen({
   },
 });
 
-exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role))
-      return next(
-        new AppError('You do not have permission to perform this action', 403),
-      );
-    next();
-  };
-};
-
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
+const cookieOptions = {
+  expires: new Date(
+    Date.now() + parseInt(process.env.JWT_COOKIE_EXPIRES_IN) + 86400000,
+  ),
+  httpOnly: true,
+  secure: false,
+  sameSite: 'Lax',
+};
+
+if (process.env.NODE_ENV === 'production') {
+  cookieOptions.secure = true;
+  cookieOptions.sameSite = 'None';
+}
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
-  const cookieOptions = {
-    expiresIn: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN + 86400000,
-    ),
-    httpOnly: true,
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    cookieOptions.secure = true;
-    cookieOptions.SameSite = 'None';
-  }
   const { password, ...rest } = user._doc;
 
   res.cookie('jwt', token, cookieOptions).status(statusCode).json({
@@ -54,23 +46,6 @@ const createSendToken = (user, statusCode, res) => {
     user: rest,
   });
 };
-
-exports.protect = catchAsync(async (req, res, next) => {
-  const token = req.cookies.jwt;
-  if (!token || token === 'null')
-    return next(new AppError('User is not logged in', 401));
-
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-
-  const freshUser = await User.findById(decoded.id);
-  if (!freshUser) return next(new AppError('User does not exist', 401));
-
-  if (await freshUser.changedPasswordAfter(decoded.iat))
-    return next(new AppError('Password was changed. Login again', 401));
-
-  req.user = freshUser;
-  next();
-});
 
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   if (req.cookies.jwt) {
@@ -236,7 +211,7 @@ exports.oAuth = catchAsync(async (req, res) => {
 });
 
 exports.logout = (req, res) => {
-  res.clearCookie('jwt').status(200).json({
+  res.clearCookie('jwt', cookieOptions).status(200).json({
     status: 'success',
     data: null,
   });

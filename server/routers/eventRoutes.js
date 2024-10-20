@@ -1,12 +1,12 @@
 const express = require('express');
-const authController = require('./../controllers/authController');
 const eventController = require('./../controllers/eventController');
+const authMiddleware = require('./../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.route('/latestEvents').get(eventController.getLatestEvents);
 
-router.use(authController.protect);
+router.use(authMiddleware.protect);
 
 router
   .route('/eventDays/:eventId/day/:dayId')
@@ -22,12 +22,12 @@ router
 router
   .route('/:id')
   .get(eventController.getSingleEvent)
-  .patch(authController.restrictTo('club'), eventController.updateEvent)
-  .delete(authController.restrictTo('club'), eventController.deleteEvent);
+  .patch(authMiddleware.restrictTo('club'), eventController.updateEvent)
+  .delete(authMiddleware.restrictTo('club'), eventController.deleteEvent);
 
 router
   .route('/')
   .get(eventController.getAllEvents)
-  .post(authController.restrictTo('club'), eventController.createEvent);
+  .post(authMiddleware.restrictTo('club'), eventController.createEvent);
 
 module.exports = router;

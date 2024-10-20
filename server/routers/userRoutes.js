@@ -1,6 +1,7 @@
 const express = require('express');
 const userController = require('./../controllers/userController');
 const authController = require('./../controllers/authController');
+const authMiddleware = require('./../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -10,7 +11,7 @@ router.post('/login', authController.login);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
-router.use(authController.protect);
+router.use(authMiddleware.protect);
 
 router.patch('/updateMe', userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
@@ -18,7 +19,7 @@ router.patch('/updatePassword', authController.updatePassword);
 router.get('/me', userController.getMe, userController.getUser);
 router.get('/logout', authController.logout);
 
-router.use(authController.restrictTo('admin'));
+router.use(authMiddleware.restrictTo('admin'));
 
 router.route('/').get(userController.getAllUsers);
 

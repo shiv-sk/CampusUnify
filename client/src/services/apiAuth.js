@@ -6,9 +6,8 @@ export async function login({ email, password }) {
     { email, password },
     { withCredentials: true }
   );
-
-  if (error) return new Error(error.message);
-  return data.data;
+  if (error) throw new Error(error.message);
+  return data.user;
 }
 
 export async function signup({ name, email, role, password, passwordConfirm }) {
@@ -17,9 +16,9 @@ export async function signup({ name, email, role, password, passwordConfirm }) {
     { name, email, role, password, passwordConfirm },
     { withCredentials: true }
   );
-
-  if (error) return new Error(error.message);
-  return data.data;
+  console.log("response from axios call: " , data.user);
+  if (error) throw new Error(error.message);
+  return data.user;
 }
 
 export async function updateUser(updatedData) {

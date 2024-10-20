@@ -1,22 +1,22 @@
 const express = require('express');
-const authController = require('./../controllers/authController');
+const authMiddleware = require('./../middleware/authMiddleware');
 const bookingsController = require('./../controllers/bookingsController');
 const router = express.Router();
 
-router.use(authController.protect);
+router.use(authMiddleware.protect);
 router.get(
   '/',
-  authController.restrictTo('user'),
+  authMiddleware.restrictTo('user'),
   bookingsController.getUserRegistrations,
 );
 
 router.get(
   '/generateTicket/:id',
-  authController.restrictTo('user'),
+  authMiddleware.restrictTo('user'),
   bookingsController.generateTicket,
 );
 
-router.use(authController.restrictTo('club'));
+router.use(authMiddleware.restrictTo('club'));
 
 router.get('/:eventId', bookingsController.getEventBookings);
 router.get(
